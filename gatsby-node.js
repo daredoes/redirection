@@ -41,7 +41,7 @@ outputJSON = (publicFolder) => {
           graphql(
             `
               {
-                items: allMarkdownRemark(frontmatter: {enabled: {eq: true}}}) {
+                items: allMarkdownRemark(filter: {frontmatter: {enabled: {eq: true}}}) {
                   edges {
                     node {
                       frontmatter {
