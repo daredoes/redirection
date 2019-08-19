@@ -1,5 +1,5 @@
 import React from "react"
-import { Link, useStaticQuery, graphql } from "gatsby"
+import { graphql } from "gatsby"
 
 import Layout from "../components/layout"
 import Item from "../components/item"
@@ -7,14 +7,13 @@ import SEO from "../components/seo"
 
 import Dropdown from "react-bootstrap/Dropdown"
 import Button from "react-bootstrap/Button"
-import DropdownButton from "react-bootstrap/DropdownButton"
 import ListGroup from "react-bootstrap/ListGroup"
-import SplitButton from "react-bootstrap/SplitButton"
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEyeSlash as hiddenIcon } from "@fortawesome/free-regular-svg-icons"
 import { faEye as visibleIcon } from "@fortawesome/free-solid-svg-icons"
 
+import getLoggedInUser from '../components/netlifyIdentity';
 const noTag = "None";
 
 function addOneOrCreateForDict(dict, key) {
@@ -131,6 +130,8 @@ class IndexPage extends React.Component {
       this.flipAllFilters(!hasAllFiltersActive);
     }
 
+    const hasLoggedInUser = getLoggedInUser();
+
     return (<Layout>
       <SEO title="Home" />
       <div className="d-flex flex-column mt-2">
@@ -148,7 +149,7 @@ class IndexPage extends React.Component {
         </Dropdown>
     </div> }
         <ListGroup className="pt-2">
-          {this.publicItems.length > 0 ? publicItemElements : <ListGroup.Item variant="dark"><a href="/admin/">{typeof window !== `undefined` && window.netlifyIdentity && window.netlifyIdentity.currentUser() ? 
+          {this.publicItems.length > 0 ? publicItemElements : <ListGroup.Item variant="dark"><a href="/admin/">{hasLoggedInUser ? 
           "Go to the CMS" : "Login"}</a> to add your first bookmark!</ListGroup.Item>}
         </ListGroup>
       </div>

@@ -7,6 +7,8 @@ import Modal from "react-bootstrap/Modal"
 import Navbar from "react-bootstrap/Navbar"
 import Nav from "react-bootstrap/Nav"
 
+import getLoggedInUser from '../components/netlifyIdentity';
+
 function VerticallyCenteredModal(props) {
   return (
     <Modal
@@ -39,7 +41,7 @@ const aboutBody = (<div>
 
 const Header = ({ siteTitle }) => {
   const [modalShow, setModalShow] = React.useState(false);
-  const hasLoggedInUser = typeof window !== `undefined` && window.netlifyIdentity && window.netlifyIdentity.currentUser();
+  const hasLoggedInUser = getLoggedInUser();
   return (
     <Navbar variant="dark" bg="dark">
       <Navbar.Brand as={Link} to="/">{siteTitle}</Navbar.Brand>
