@@ -32,7 +32,7 @@ module.exports = {
       resolve: `gatsby-source-filesystem`,
       options: {
         name: `items`,
-        path: `${__dirname}/src/content`,
+        path: `${__dirname}/bookmarks`,
       },
     },
     `gatsby-transformer-sharp`,

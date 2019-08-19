@@ -41,7 +41,7 @@ outputJSON = (publicFolder) => {
           graphql(
             `
               {
-                items: allMarkdownRemark(filter: {fileAbsolutePath: {regex: "/content/"}, frontmatter: {enabled: {eq: true}}}) {
+                items: allMarkdownRemark(frontmatter: {enabled: {eq: true}}}) {
                   edges {
                     node {
                       frontmatter {

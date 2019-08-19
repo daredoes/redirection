@@ -166,7 +166,7 @@ query IndexQuery {
       }
     }
   }
-  items: allMarkdownRemark(sort: {fields: frontmatter___title}, filter: {fileAbsolutePath: {regex: "/content/"}, frontmatter: {public: {eq: true}}}) {
+  items: allMarkdownRemark(sort: {fields: frontmatter___title}, filter: {frontmatter: {public: {eq: true}}}) {
     edges {
       node {
         frontmatter {
