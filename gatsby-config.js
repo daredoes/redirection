@@ -47,7 +47,13 @@ module.exports = {
         background_color: "#e0e0e0",
         theme_color: "#c62828",
         display: "minimal-ui",
+        icon: "/logos/logo-1024.png",
         icons: [
+          {
+            src: "/logos/logo-48.png",
+            sizes: "48x48",
+            type: "image/png"
+          },
           {
             src: "/logos/logo-192.png",
             sizes: "192x192",

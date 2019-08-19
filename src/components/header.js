@@ -30,12 +30,15 @@ function VerticallyCenteredModal(props) {
   );
 }
 
+const aboutBody = (<div>
+  <p>This goal of this website is to store your favorite urls on the internet, while making it convenient to share them with your friends.</p>
+  <p>Each bookmarked url can be given a custom path that attaches to the end of the website url.</p>
+  <p>Copy the link address of any of the bookmarks on the site to save their custom url.</p>
+  </div>)
+
 
 const Header = ({ siteTitle }) => {
   const [modalShow, setModalShow] = React.useState(false);
-  const aboutBody = (<div>
-    <p>This website allows you to store and visit your favorite urls on the internet.</p><p>Each url can be rewritten to something memorable.</p><p>Copy the link address of any of the bookmarks on the site to save their custom url.</p>
-    </div>)
   return (
     <Navbar variant="dark" bg="dark">
       <Navbar.Brand as={Link} to="/">{siteTitle}</Navbar.Brand>

@@ -12,34 +12,42 @@ import ListGroup from "react-bootstrap/ListGroup"
 import SplitButton from "react-bootstrap/SplitButton"
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faEyeSlash as hiddenIcon } from "@fortawesome/pro-regular-svg-icons"
-import { faEye as visibleIcon } from "@fortawesome/pro-solid-svg-icons"
+import { faEyeSlash as hiddenIcon } from "@fortawesome/free-regular-svg-icons"
+import { faEye as visibleIcon } from "@fortawesome/free-solid-svg-icons"
 
 const noTag = "None";
+
+function addOneOrCreateForDict(dict, key) {
+  if (!dict.hasOwnProperty(key)) {
+    dict[key] = 0;
+  }
+  dict[key] += 1;
+}
+
+function addToDefaultDict(dict, key, value) {
+  if (!dict.hasOwnProperty(key)) {
+    dict[key] = value;
+  }
+}
 
 class IndexPage extends React.Component {
   constructor(props) {
     super(props);
     const data = props.data;
+    this.origin = props.location.origin;
+    const doesStartWithFiltersOn = true;
     this.publicItems = data.items.edges.filter((edge) => edge.node.frontmatter.public);
+
     let publicTags = {};
     let publicTagCount = {};
     this.publicItems.forEach((edge) => {
-      let tags = edge.node.frontmatter.tags || [];
-      tags.forEach((tag) => {
-        if (!publicTags.hasOwnProperty(tag)) {
-          publicTags[tag] = false;;
-        }
-        if (!publicTagCount.hasOwnProperty(tag)) {
-          publicTagCount[tag] = 0;;
-        }
-        publicTagCount[tag] += 1;
-      });
-      if (tags.length == 0) {
-        if (!publicTagCount.hasOwnProperty(noTag)) {
-          publicTagCount[noTag] = 0;
-        }
-        publicTagCount[noTag] += 1;
+      if (!edge.node.frontmatter.tags) {
+        addOneOrCreateForDict(publicTagCount, noTag);
+      } else {
+        edge.node.frontmatter.tags.forEach((tag) => {
+          addToDefaultDict(publicTags, tag, doesStartWithFiltersOn);
+          addOneOrCreateForDict(publicTagCount, tag);
+        });
       }
     })
     this.state = {
@@ -49,10 +57,10 @@ class IndexPage extends React.Component {
     }
   }
 
-  render() {
+  makeTagElements = () => {
     let keys = Object.keys(this.state.tags);
     keys.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-    let tagFilterElements = keys.map((key) => {
+    return keys.map((key) => {
       let flipTagState = () => {
         let tags = this.state.tags;
         tags[key] = !tags[key];
@@ -65,9 +73,14 @@ class IndexPage extends React.Component {
         <Dropdown.Item as={Button} key={key} onClick={flipTagState} className="p-2"  variant="outline-dark" title={`${this.state.tagCounts[key]} Items`}><FontAwesomeIcon icon={this.state.tags[key] ? visibleIcon : hiddenIcon}/>&nbsp;{key} <span className="text-secondary">({this.state.tagCounts[key]} bookmark{this.state.tagCounts[key] != 1 ? 's' : ''})</span></Dropdown.Item>
       ); 
     })
+  }
 
-    const origin = this.props.location.origin;
-    let publicItemElements = this.publicItems.filter((edge) => {
+  componentDidUpdate = () => {
+    this.origin = this.props.location.origin;
+  }
+
+  makeBookmarkElements = () => {
+    return this.publicItems.filter((edge) => {
       if (!edge.node.frontmatter.tags) {
         return true;  // this.state.tags[noTag];
       }
@@ -81,48 +94,61 @@ class IndexPage extends React.Component {
       return isInFilter;
 
     }).map((edge, i) => {
-      return <Item origin={origin} variant={i % 2 ? 'secondary' : 'dark'} key={edge.node.frontmatter.title} data={edge.node.frontmatter} />
+      return <Item origin={this.origin} variant={i % 2 ? 'secondary' : 'dark'} key={edge.node.frontmatter.title} data={edge.node.frontmatter} />
     });
+  }
+
+  flipAllFilters = (state) => {
+    let tags = {};
+    Object.keys(this.state.tags).forEach((tag) => {
+      tags[tag] = state;
+    })
+    this.setState({
+      tags: tags
+    })
+  };
+
+  preventDropdownFromClosingOnSelect = (isOpen, e, {source}) => {
+    if (!isOpen && source === "select" && e.target.id !== "closeMenu") {
+      this.setState({filters: true})
+    } else {
+      this.setState({filters: isOpen})
+    }
+  }
+
+
+  render() {
+    let keys = Object.keys(this.state.tags);
+    keys.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+    let tagFilterElements = this.makeTagElements()
+    let publicItemElements = this.makeBookmarkElements();
     const tagKeys = Object.keys(this.state.tags);
-    const hasItems = tagKeys.filter((tag) => this.state.tags[tag]).length == tagKeys.length;
-    
-    let flipAllFilters = () => {
-      let tags = {};
-      Object.keys(this.state.tags).forEach((tag) => {
-        tags[tag] = !hasItems;
-      })
-      this.setState({
-        tags: tags
-      })
-    };
-    
+    const hasAllFiltersActive = tagKeys.filter((tag) => this.state.tags[tag]).length == tagKeys.length;
     const isPlural = publicItemElements.length != 1;
     const isPluralFilters = tagFilterElements.length != 1;
+
+    const flipFilters = () => {
+      this.flipAllFilters(!hasAllFiltersActive);
+    }
 
     return (<Layout>
       <SEO title="Home" />
       <div className="d-flex flex-column mt-2">
         { tagFilterElements.length > 0 && <div className="sticky-top pt-2 pb-2 bg-light d-flex flex-column justify-content-between">
-        <Dropdown drop="down" show={this.state.filters} onToggle={(isOpen, e, {source}) => {
-          if (!isOpen && source === "select" && e.target.id !== "closeMenu") {
-            this.setState({filters: true})
-          } else {
-            this.setState({filters: isOpen})
-          }
-        }}> 
+        <Dropdown drop="down" show={this.state.filters} onToggle={this.preventDropdownFromClosingOnSelect}> 
           <Dropdown.Toggle variant="dark" id="dropdown-basic" block size="lg">
           Filter{isPluralFilters && 's'}
           </Dropdown.Toggle>
 
           <Dropdown.Menu className="w-100" flip={false} style={{maxHeight: "75vh", overflowY: "scroll"}}>
-            <Dropdown.Item as={Button} onClick={flipAllFilters} className=" p-2"><FontAwesomeIcon icon={hasItems ? visibleIcon : hiddenIcon}/>{` `}{hasItems ? 'Disable' : 'Enable'} All Filters</Dropdown.Item>
+            <Dropdown.Item as={Button} onClick={flipFilters} className=" p-2"><FontAwesomeIcon icon={hasAllFiltersActive ? visibleIcon : hiddenIcon}/>{` `}{hasAllFiltersActive ? 'Disable' : 'Enable'} All Filters</Dropdown.Item>
             {tagFilterElements}
             <Dropdown.Header>Showing {publicItemElements.length} bookmark{isPlural && 's'}</Dropdown.Header>
           </Dropdown.Menu>
         </Dropdown>
     </div> }
-        <ListGroup>
-          {publicItemElements.length > 0 ? publicItemElements : <ListGroup.Item variant="dark"><a href="/admin/">Login</a> to add your first bookmark!</ListGroup.Item>}
+        <ListGroup className="pt-2">
+          {this.publicItems.length > 0 ? publicItemElements : <ListGroup.Item variant="dark"><a href="/admin/">Login</a> to add your first bookmark!</ListGroup.Item>}
         </ListGroup>
       </div>
     </Layout>)
