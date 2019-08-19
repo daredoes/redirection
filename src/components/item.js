@@ -30,7 +30,7 @@ Item.propTypes = {
     path: PropTypes.string,
     url: PropTypes.string,
     tags: PropTypes.string,
-    enabled: PropTypes.boolean
+    enabled: PropTypes.bool
   }).isRequired,
   variant: PropTypes.string,
   origin: PropTypes.string,
