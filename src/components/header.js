@@ -39,6 +39,7 @@ const aboutBody = (<div>
 
 const Header = ({ siteTitle }) => {
   const [modalShow, setModalShow] = React.useState(false);
+  const hasLoggedInUser = typeof window !== `undefined` && window.netlifyIdentity && window.netlifyIdentity.currentUser();
   return (
     <Navbar variant="dark" bg="dark">
       <Navbar.Brand as={Link} to="/">{siteTitle}</Navbar.Brand>
@@ -52,7 +53,7 @@ const Header = ({ siteTitle }) => {
         />
       </Nav>
       <Nav>
-        <Nav.Link href="/admin">{typeof window !== `undefined` && window.netlifyIdentity && window.netlifyIdentity.currentUser() ? "Logout" : "Login"}}</Nav.Link>
+        <Nav.Link href={`/admin${hasLoggedInUser && '/logout'}`}>{hasLoggedInUser ? "Logout" : "Login"}</Nav.Link>
       </Nav>
     </Navbar>
   )
