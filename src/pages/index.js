@@ -69,7 +69,7 @@ class IndexPage extends React.Component {
       };
 
       return (
-        <Dropdown.Item as={Button} key={key} onClick={flipTagState} className="p-2"  variant="outline-dark" title={`${this.state.tagCounts[key]} Items`}><FontAwesomeIcon icon={this.state.tags[key] ? visibleIcon : hiddenIcon}/>&nbsp;{key} <span className="text-secondary">({this.state.tagCounts[key]} bookmark{this.state.tagCounts[key] != 1 ? 's' : ''})</span></Dropdown.Item>
+        <Dropdown.Item as={Button} key={key} onClick={flipTagState} className="p-2"  variant="outline-dark" title={`${this.state.tagCounts[key]} Items`}><FontAwesomeIcon icon={this.state.tags[key] ? visibleIcon : hiddenIcon}/>&nbsp;{key} <span className="text-secondary">({this.state.tagCounts[key]} bookmark{this.state.tagCounts[key] !== 1 ? 's' : ''})</span></Dropdown.Item>
       ); 
     })
   }
@@ -122,9 +122,9 @@ class IndexPage extends React.Component {
     let tagFilterElements = this.makeTagElements()
     let publicItemElements = this.makeBookmarkElements();
     const tagKeys = Object.keys(this.state.tags);
-    const hasAllFiltersActive = tagKeys.filter((tag) => this.state.tags[tag]).length == tagKeys.length;
-    const isPlural = publicItemElements.length != 1;
-    const isPluralFilters = tagFilterElements.length != 1;
+    const hasAllFiltersActive = tagKeys.filter((tag) => this.state.tags[tag]).length === tagKeys.length;
+    const isPlural = publicItemElements.length !== 1;
+    const isPluralFilters = tagFilterElements.length !== 1;
 
     const flipFilters = () => {
       this.flipAllFilters(!hasAllFiltersActive);
