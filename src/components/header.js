@@ -47,6 +47,7 @@ const Header = ({ siteTitle }) => {
       <Navbar.Brand as={Link} to="/">{siteTitle}</Navbar.Brand>
       <Nav className="mr-auto">
         <Nav.Link onClick={() => setModalShow(true)}>About</Nav.Link>
+        <Nav.Link href="https://app.netlify.com/start/deploy?repository=https://github.com/daredoes/redirection">Deploy To Netlify!</Nav.Link>
         <VerticallyCenteredModal
           show={modalShow}
           onHide={() => setModalShow(false)}
