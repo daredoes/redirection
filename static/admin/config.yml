@@ -10,7 +10,7 @@ public_folder: assets
 collections: # A list of collections the CMS should be able to edit
   - label: "Item"
     name: "item"
-    folder: "src/content"
+    folder: "bookmarks"
     create: true
     fields:
         - {label: "Name", name: "title", widget: "string"}
