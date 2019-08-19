@@ -11,10 +11,7 @@
 Kick off your own redirection project with this default boilerplate.
 ## 🚀 Quick start
 
-1.  **Deploy to Netlify.**
-
-    [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/daredoes/redirection)
-    ```
+1.  [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/daredoes/redirection)
 
 1.  **Setup Git Gateway.**
 
