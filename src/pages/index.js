@@ -148,7 +148,8 @@ class IndexPage extends React.Component {
         </Dropdown>
     </div> }
         <ListGroup className="pt-2">
-          {this.publicItems.length > 0 ? publicItemElements : <ListGroup.Item variant="dark"><a href="/admin/">Login</a> to add your first bookmark!</ListGroup.Item>}
+          {this.publicItems.length > 0 ? publicItemElements : <ListGroup.Item variant="dark"><a href="/admin/">{window.netlifyIdentity && window.netlifyIdentity.currentUser() ? 
+          "Go to the CMS" : "Login"}</a> to add your first bookmark!</ListGroup.Item>}
         </ListGroup>
       </div>
     </Layout>)

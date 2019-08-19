@@ -52,7 +52,7 @@ const Header = ({ siteTitle }) => {
         />
       </Nav>
       <Nav>
-        <Nav.Link href="/admin">Login</Nav.Link>
+        <Nav.Link href="/admin">{window.netlifyIdentity && window.netlifyIdentity.currentUser() ? "Logout" : "Login"}}</Nav.Link>
       </Nav>
     </Navbar>
   )
