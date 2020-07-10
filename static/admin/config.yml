@@ -8,12 +8,6 @@ media_folder: static/assets
 public_folder: assets
 
 collections: # A list of collections the CMS should be able to edit
-  - label: "Tags"
-    name: "tags"
-    folder: "tags"
-    create: true
-    fields:
-        - {label: "Name", name: "title", widget: "string"}
   - label: "Item"
     name: "item"
     folder: "bookmarks"
@@ -39,3 +33,9 @@ collections: # A list of collections the CMS should be able to edit
             }
           default: []
           required: false
+  - label: "Tags"
+    name: "tags"
+    folder: "tags"
+    create: true
+    fields:
+        - {label: "Name", name: "title", widget: "string"}
