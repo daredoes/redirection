@@ -2,7 +2,7 @@ backend:
   name: git-gateway
   #name: github
   #repo: daredoes/redirection
-  branch: master
+  branch: rewrite
 
 media_folder: static/assets
 public_folder: assets
