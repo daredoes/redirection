@@ -23,7 +23,7 @@ export default function Filters({ onChange }) {
       }
     }
   `)
-  const tags = _.filter(
+  const tags = _.sortBy(_.filter(
     _.uniq(
       _.flatMap(data.items.edges, edge => {
         return edge.node.frontmatter.tags
@@ -32,7 +32,7 @@ export default function Filters({ onChange }) {
     o => {
       return o !== null
     }
-  )
+  ), (o) => o)
 
   const [selectedTags, setTags] = useState([])
   const handleChange = (event, value) => {
