@@ -56,7 +56,7 @@ exports.createPages = ({ graphql, actions }) => {
         `
           {
             items: allMarkdownRemark(
-              filter: { frontmatter: { enabled: { eq: true } } }
+              filter: { frontmatter: { enabled: { eq: true }, path: { ne: null } } }
             ) {
               edges {
                 node {

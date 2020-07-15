@@ -37,7 +37,7 @@ export default function Filters({ onChange }) {
       }
   }
   return (
-    <Grid container direction="column" justify="center" alignItems="center"  >
+    <Grid container direction="column" justify="center" alignItems="center" style={{ marginTop: '1rem'}}  >
       <Grid item xs={11} style={{ width: '100%'}}>
         <Autocomplete
           multiple
