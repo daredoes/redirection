@@ -1,8 +1,6 @@
 import PropTypes from "prop-types"
 import React from "react"
 import ListItem from "@material-ui/core/ListItem"
-import ListItemText from "@material-ui/core/ListItemText"
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction"
 
 import Chip from "@material-ui/core/Chip"
 import Link from "@material-ui/core/Link"
@@ -11,23 +9,12 @@ import Card from "@material-ui/core/Card"
 import CardActions from "@material-ui/core/CardActions"
 import CardContent from "@material-ui/core/CardContent"
 import Typography from "@material-ui/core/Typography"
-import { makeStyles } from "@material-ui/core/styles"
-
-const useStyles = makeStyles({
-  secondary: {
-    "&&::before": {
-      content: "\\2014\\A0",
-      color: "red",
-    },
-  },
-})
 
 const Item = ({ data, divider, origin }) => {
   let tags = data.tags || []
-  const { title, path, url, enabled } = data
+  const { title, path, url } = data
   const link = path ? `.${path}` : url
   const hasCustomPath = path
-  const classes = useStyles()
   return (
     <ListItem
       component={"a"}

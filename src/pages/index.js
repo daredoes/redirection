@@ -1,5 +1,4 @@
 import React, { useState } from "react"
-import _ from "lodash"
 
 import Layout from "../components/layout"
 import Items from "../components/items"
@@ -8,7 +7,7 @@ import Filters from "../components/filters"
 
 import Grid from "@material-ui/core/Grid"
 
-function IndexPage({ data, location }) {
+function IndexPage({  location }) {
   const [tags, setTags] = useState([])
   return (
     <Layout>
