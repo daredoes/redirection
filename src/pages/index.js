@@ -4,49 +4,53 @@ import { graphql } from "gatsby"
 import Layout from "../components/layout"
 import Item from "../components/item"
 import SEO from "../components/seo"
+import Filters from "../components/filters"
 
-import Dropdown from "react-bootstrap/Dropdown"
-import Button from "react-bootstrap/Button"
-import ListGroup from "react-bootstrap/ListGroup"
+import List from "@material-ui/core/List"
+import ListItem from "@material-ui/core/ListItem"
+import Button from "@material-ui/core/Button"
+import Grid from "@material-ui/core/Grid"
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEyeSlash as hiddenIcon } from "@fortawesome/free-regular-svg-icons"
 import { faEye as visibleIcon } from "@fortawesome/free-solid-svg-icons"
 
-import getLoggedInUser from '../components/netlifyIdentity';
-const noTag = "None";
+import getLoggedInUser from "../components/netlifyIdentity"
+const noTag = "None"
 
 function addOneOrCreateForDict(dict, key) {
   if (!dict.hasOwnProperty(key)) {
-    dict[key] = 0;
+    dict[key] = 0
   }
-  dict[key] += 1;
+  dict[key] += 1
 }
 
 function addToDefaultDict(dict, key, value) {
   if (!dict.hasOwnProperty(key)) {
-    dict[key] = value;
+    dict[key] = value
   }
 }
 
 class IndexPage extends React.Component {
   constructor(props) {
-    super(props);
-    const data = props.data;
-    this.origin = props.location.origin;
-    const doesStartWithFiltersOn = true;
-    this.publicItems = data.items.edges.filter((edge) => edge.node.frontmatter.public);
+    super(props)
+    const data = props.data
+    this.origin = props.location.origin
+    const doesStartWithFiltersOn = true
+    this.publicItems = data.items.edges.filter(
+      edge => edge.node.frontmatter.public
+    )
 
-    let publicTags = {};
-    let publicTagCount = {};
-    this.publicItems.forEach((edge) => {
+    let publicTags = {}
+    let publicTagCount = {}
+    this.publicItems.forEach(edge => {
       if (!edge.node.frontmatter.tags) {
-        addOneOrCreateForDict(publicTagCount, noTag);
+        addOneOrCreateForDict(publicTagCount, noTag)
       } else {
-        edge.node.frontmatter.tags.forEach((tag) => {
-          addToDefaultDict(publicTags, tag, doesStartWithFiltersOn);
-          addOneOrCreateForDict(publicTagCount, tag);
-        });
+        edge.node.frontmatter.tags.forEach(tag => {
+          addToDefaultDict(publicTags, tag, doesStartWithFiltersOn)
+          addOneOrCreateForDict(publicTagCount, tag)
+        })
       }
     })
     this.state = {
@@ -57,130 +61,145 @@ class IndexPage extends React.Component {
   }
 
   makeTagElements = () => {
-    let keys = Object.keys(this.state.tags);
-    keys.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-    return keys.map((key) => {
+    let keys = Object.keys(this.state.tags)
+    keys.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+    return keys.map(key => {
       let flipTagState = () => {
-        let tags = this.state.tags;
-        tags[key] = !tags[key];
+        let tags = this.state.tags
+        tags[key] = !tags[key]
         this.setState({
-          tags: tags
+          tags: tags,
         })
-      };
+      }
 
       return (
-        <Dropdown.Item as={Button} key={key} onClick={flipTagState} className="p-2"  variant="outline-dark" title={`${this.state.tagCounts[key]} Items`}><FontAwesomeIcon icon={this.state.tags[key] ? visibleIcon : hiddenIcon}/>&nbsp;{key} <span className="text-secondary">({this.state.tagCounts[key]} bookmark{this.state.tagCounts[key] !== 1 ? 's' : ''})</span></Dropdown.Item>
-      ); 
+        <div></div>
+        //<Dropdown.Item as={Button} key={key} onClick={flipTagState} className="p-2"  variant="outline-dark" title={`${this.state.tagCounts[key]} Items`}><FontAwesomeIcon icon={this.state.tags[key] ? visibleIcon : hiddenIcon}/>&nbsp;{key} <span className="text-secondary">({this.state.tagCounts[key]} bookmark{this.state.tagCounts[key] !== 1 ? 's' : ''})</span></Dropdown.Item>
+      )
     })
   }
 
   componentDidUpdate = () => {
-    this.origin = this.props.location.origin;
+    this.origin = this.props.location.origin
   }
 
   makeBookmarkElements = () => {
-    return this.publicItems.filter((edge) => {
-      if (!edge.node.frontmatter.tags) {
-        return true;  // this.state.tags[noTag];
-      }
-      let tags = edge.node.frontmatter.tags;
-      let isInFilter = false;
-      tags.forEach((tag) => {
-        if (this.state.tags[tag]){
-          isInFilter = true;
+    return this.publicItems
+      .filter(edge => {
+        if (!edge.node.frontmatter.tags) {
+          return true // this.state.tags[noTag];
         }
+        let tags = edge.node.frontmatter.tags
+        let isInFilter = false
+        tags.forEach(tag => {
+          if (this.state.tags[tag]) {
+            isInFilter = true
+          }
+        })
+        return isInFilter
       })
-      return isInFilter;
-
-    }).map((edge, i) => {
-      return <Item origin={this.origin} variant={i % 2 ? 'secondary' : 'dark'} key={edge.node.frontmatter.title} data={edge.node.frontmatter} />
-    });
+      .map((edge, i) => {
+        console.log(edge.node)
+        return (
+          <Item
+            origin={this.origin}
+            divider={i !== 0}
+            key={edge.node.frontmatter.title}
+            data={edge.node.frontmatter}
+          />
+        )
+      })
   }
 
-  flipAllFilters = (state) => {
-    let tags = {};
-    Object.keys(this.state.tags).forEach((tag) => {
-      tags[tag] = state;
+  flipAllFilters = state => {
+    let tags = {}
+    Object.keys(this.state.tags).forEach(tag => {
+      tags[tag] = state
     })
     this.setState({
-      tags: tags
+      tags: tags,
     })
-  };
+  }
 
-  preventDropdownFromClosingOnSelect = (isOpen, e, {source}) => {
+  preventDropdownFromClosingOnSelect = (isOpen, e, { source }) => {
     if (!isOpen && source === "select" && e.target.id !== "closeMenu") {
-      this.setState({filters: true})
+      this.setState({ filters: true })
     } else {
-      this.setState({filters: isOpen})
+      this.setState({ filters: isOpen })
     }
   }
 
-
   render() {
-    let keys = Object.keys(this.state.tags);
-    keys.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+    let keys = Object.keys(this.state.tags)
+    keys.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
     let tagFilterElements = this.makeTagElements()
-    let publicItemElements = this.makeBookmarkElements();
-    const tagKeys = Object.keys(this.state.tags);
-    const hasAllFiltersActive = tagKeys.filter((tag) => this.state.tags[tag]).length === tagKeys.length;
-    const isPlural = publicItemElements.length !== 1;
-    const isPluralFilters = tagFilterElements.length !== 1;
+    let publicItemElements = this.makeBookmarkElements()
+    const tagKeys = Object.keys(this.state.tags)
+    const hasAllFiltersActive =
+      tagKeys.filter(tag => this.state.tags[tag]).length === tagKeys.length
+    const isPlural = publicItemElements.length !== 1
+    const isPluralFilters = tagFilterElements.length !== 1
 
     const flipFilters = () => {
-      this.flipAllFilters(!hasAllFiltersActive);
+      this.flipAllFilters(!hasAllFiltersActive)
     }
 
-    const hasLoggedInUser = getLoggedInUser();
+    const hasLoggedInUser = getLoggedInUser()
 
-    return (<Layout>
-      <SEO title="Home" />
-      <div className="d-flex flex-column mt-2">
-        { tagFilterElements.length > 0 && <div className="sticky-top pt-2 pb-2 bg-light d-flex flex-column justify-content-between">
-        <Dropdown drop="down" show={this.state.filters} onToggle={this.preventDropdownFromClosingOnSelect}> 
-          <Dropdown.Toggle variant="dark" id="dropdown-basic" block size="lg">
-          Filter{isPluralFilters && 's'}
-          </Dropdown.Toggle>
-
-          <Dropdown.Menu className="w-100" flip={false} style={{maxHeight: "75vh", overflowY: "scroll"}}>
-            <Dropdown.Item as={Button} onClick={flipFilters} className=" p-2"><FontAwesomeIcon icon={hasAllFiltersActive ? visibleIcon : hiddenIcon}/>{` `}{hasAllFiltersActive ? 'Disable' : 'Enable'} All Filters</Dropdown.Item>
-            {tagFilterElements}
-            <Dropdown.Header>Showing {publicItemElements.length} bookmark{isPlural && 's'}</Dropdown.Header>
-          </Dropdown.Menu>
-        </Dropdown>
-    </div> }
-        <ListGroup className="pt-2">
-          {this.publicItems.length > 0 ? publicItemElements : <ListGroup.Item variant="dark"><a href="/admin/">{hasLoggedInUser ? 
-          "Go to the CMS" : "Login"}</a> to add your first bookmark!</ListGroup.Item>}
-        </ListGroup>
-      </div>
-    </Layout>)
+    return (
+      <Layout>
+        <SEO title="Home" />
+        <Grid container direction="column">
+          <Grid item>
+            <Filters />
+          </Grid>
+          <Grid item>
+            <List className="pt-2">
+              {this.publicItems.length > 0 ? (
+                publicItemElements
+              ) : (
+                <ListItem>
+                  <a href="/admin/#/">
+                    {hasLoggedInUser ? "Go to the CMS" : "Login"}
+                  </a>{" "}
+                  to add your first bookmark!
+                </ListItem>
+              )}
+            </List>
+          </Grid>
+        </Grid>
+      </Layout>
+    )
   }
 }
 
 export const query = graphql`
-query IndexQuery {
-  site {
-    siteMetadata {
-      rssMetadata {
-        title
-      }
-    }
-  }
-  items: allMarkdownRemark(sort: {fields: frontmatter___title}, filter: {frontmatter: {public: {eq: true}}}) {
-    edges {
-      node {
-        frontmatter {
+  query IndexQuery {
+    site {
+      siteMetadata {
+        rssMetadata {
           title
-          path
-          url
-          public
-          enabled
-          tags
         }
       }
     }
-    totalCount
+    items: allMarkdownRemark(
+      sort: { fields: frontmatter___title }
+      filter: { frontmatter: { public: { eq: true } } }
+    ) {
+      edges {
+        node {
+          frontmatter {
+            title
+            path
+            url
+            public
+            enabled
+            tags
+          }
+        }
+      }
+      totalCount
+    }
   }
-}
-`;
+`
 export default IndexPage

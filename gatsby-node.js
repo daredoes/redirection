@@ -29,7 +29,7 @@ exports.createSchemaCustomization = ({ actions }) => {
   }
   type Frontmatter {
     title: String!
-    path: String!
+    path: String
     url: String!
     public: Boolean!
     enabled: Boolean!
@@ -80,7 +80,6 @@ exports.createPages = ({ graphql, actions }) => {
         }
         let items = formatMarkdownItems(result.data.items)
         items
-          .filter(item => item.enabled)
           .forEach(item => {
             createRedirectItem(item)
           })
