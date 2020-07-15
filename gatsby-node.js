@@ -33,7 +33,7 @@ exports.createSchemaCustomization = ({ actions }) => {
     url: String!
     public: Boolean!
     enabled: Boolean!
-    tags: [String!]!
+    tags: [String!]
   }
   `
   createTypes(typeDefs)
