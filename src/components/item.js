@@ -1,26 +1,49 @@
 import PropTypes from "prop-types"
 import React from "react"
+import ListItem from "@material-ui/core/ListItem"
 
-import ListGroupItem from "react-bootstrap/ListGroupItem"
-import Badge from "react-bootstrap/Badge"
+import Chip from "@material-ui/core/Chip"
+import Link from "@material-ui/core/Link"
+import Grid from "@material-ui/core/Grid"
+import Card from "@material-ui/core/Card"
+import CardActions from "@material-ui/core/CardActions"
+import CardContent from "@material-ui/core/CardContent"
+import Typography from "@material-ui/core/Typography"
 
-const Item = ({ data, variant, origin }) => {
-  let tags = data.tags || [];
-  const { title, path, url, enabled } = data;
-  const link = enabled && path ? `.${path}` : url;
+const Item = ({ data, divider, origin }) => {
+  let tags = data.tags || []
+  const { title, path, url } = data
+  const link = path ? `.${path}` : url
+  const hasCustomPath = path
   return (
-    <ListGroupItem variant={variant} action target="blank" href={link} className="d-flex flex-column">
-      <span className="text-primary">{title}</span>
-      <div className="d-flex justify-content-between flex-wrap">
-        <span className="blockquote-footer text-break">
-
-        {enabled && path ? `${origin}${path}` : "No Custom URL"}
-        </span>
-        <div className="d-flex justify-content-between align-items-center flex-wrap align-self-end">
-          {tags.map((tag, i) => <Badge key={i} pill variant="light" className="mr-1 mt-1">{tag}</Badge>)}
-        </div>
-      </div>
-    </ListGroupItem>
+    <ListItem
+      component={"a"}
+      target="_blank"
+      alignItems="center"
+      href={link}
+      style={{ width: "100%" }}
+    >
+      <Card style={{ width: "100%" }} variant="elevation">
+        <Link href={link} target="_blank">
+          <CardContent>
+            <Typography color="secondary">{title}</Typography>
+            <Typography
+              variant="caption"
+              color={hasCustomPath ? "primary" : undefined}
+            >
+              {hasCustomPath ? `${origin}${path}` : "No Custom URL"}
+            </Typography>
+          </CardContent>
+        </Link>
+        <CardActions>
+          {tags.map((tag, i) => (
+            <Grid key={i} item>
+              <Chip size="small" key={i} label={tag} />
+            </Grid>
+          ))}
+        </CardActions>
+      </Card>
+    </ListItem>
   )
 }
 
@@ -29,10 +52,10 @@ Item.propTypes = {
     title: PropTypes.string,
     path: PropTypes.string,
     url: PropTypes.string,
-    tags: PropTypes.string,
-    enabled: PropTypes.bool
+    tags: PropTypes.arrayOf(PropTypes.string),
+    enabled: PropTypes.bool,
   }).isRequired,
-  variant: PropTypes.string,
+  divider: PropTypes.bool.isRequired,
   origin: PropTypes.string,
 }
 
