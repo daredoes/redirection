@@ -2,6 +2,8 @@ import PropTypes from "prop-types"
 import React from "react"
 import ListItem from "@material-ui/core/ListItem"
 
+import _ from "lodash"
+
 import Chip from "@material-ui/core/Chip"
 import Link from "@material-ui/core/Link"
 import Grid from "@material-ui/core/Grid"
@@ -38,7 +40,7 @@ const Item = ({ data, divider, origin }) => {
         <CardActions>
           {tags.map((tag, i) => (
             <Grid key={i} item>
-              <Chip size="small" key={i} label={tag} />
+              <Chip size="small" className="capitalize-deeply" key={i} label={_.upperFirst(tag)} />
             </Grid>
           ))}
         </CardActions>

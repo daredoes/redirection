@@ -10,7 +10,7 @@ export default function Filters({ onChange }) {
   const data = useStaticQuery(graphql`
     query HeaderQuery {
       items: allMarkdownRemark(
-        filter: { frontmatter: { enabled: { eq: true } } }
+        filter: { frontmatter: { enabled: { eq: true }, public: { eq: true } } }
       ) {
         edges {
           node {
@@ -26,7 +26,7 @@ export default function Filters({ onChange }) {
   const tags = _.sortBy(_.filter(
     _.uniq(
       _.flatMap(data.items.edges, edge => {
-        return edge.node.frontmatter.tags
+        return _.map(edge.node.frontmatter.tags, (o) => _.upperFirst(o))
       })
     ),
     o => {
@@ -41,6 +41,7 @@ export default function Filters({ onChange }) {
       onChange(value)
     }
   }
+  console.log(tags, selectedTags)
   return (
     <Grid
       container
@@ -56,6 +57,7 @@ export default function Filters({ onChange }) {
           options={_.difference(tags, selectedTags)}
           getOptionLabel={option => option}
           onChange={handleChange}
+          className="capitalize-deeply"
           renderInput={params => (
             <TextField
               {...params}

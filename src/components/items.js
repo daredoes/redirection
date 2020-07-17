@@ -3,17 +3,13 @@ import PropTypes from "prop-types"
 
 import _ from "lodash"
 
-import List from "@material-ui/core/List"
-import ListItem from "@material-ui/core/ListItem"
 import Link from "@material-ui/core/Link"
 import Grid from "@material-ui/core/Grid"
-import Card from "@material-ui/core/Card"
-import CardContent from "@material-ui/core/CardContent"
+import Chip from "@material-ui/core/Chip"
 import Typography from "@material-ui/core/Typography"
 import { useStaticQuery, graphql } from "gatsby"
 
-import Item from "../components/item"
-import getLoggedInUser from "../components/netlifyIdentity"
+import MUIDataTable from "mui-datatables"
 
 export default function Items({ tags, origin }) {
   const data = useStaticQuery(graphql`
@@ -36,64 +32,110 @@ export default function Items({ tags, origin }) {
       }
     }
   `)
-  const tagsCount = tags.length
-  const items =
-    tagsCount === 0
-      ? data.items.edges
-      : _.filter(data.items.edges, edge => {
-          return _.intersection(edge.node.frontmatter.tags, tags).length > 0
-        })
-  console.log(items, data.items.edges, tagsCount)
-  const itemsCount = items.length
-  const itemElements = _.map(items, (edge, i) => {
-    return (
-      <Item
-        origin={origin}
-        divider={i !== itemsCount - 1}
-        key={edge.node.frontmatter.title}
-        data={edge.node.frontmatter}
-      />
+  const items = data.items.edges
+  const itemData = _.map(items, (edge, i) => {
+    const frontmatter = edge.node.frontmatter
+    const link = frontmatter.path ? `.${frontmatter.path}` : frontmatter.url
+    console.log(
+      frontmatter.tags,
+      _.map(frontmatter.tags, o => _.upperFirst(o))
     )
+    const displayLink = frontmatter.path
+      ? `${origin}${frontmatter.path}`
+      : "No Custom URL"
+    return {
+      title: frontmatter.title,
+      link: displayLink,
+      url: link,
+      tags: frontmatter.tags
+        ? _.map(frontmatter.tags, o => _.upperFirst(o))
+        : null,
+    }
   })
-  const hasLoggedInUser = getLoggedInUser()
+  const columns = [
+    {
+      name: "title",
+      label: "Name",
+      options: {
+        filter: false,
+        sort: true,
+        customBodyRenderLite: dataIndex => {
+          return (
+            <Link href={itemData[dataIndex].url} target="_blank">
+              <Typography color="inherit">
+                {itemData[dataIndex].title}
+              </Typography>
+            </Link>
+          )
+        },
+      },
+    },
+    {
+      name: "link",
+      label: "URL",
+      options: {
+        filter: false,
+        sort: true,
+        customBodyRenderLite: dataIndex => {
+          return (
+            <Link href={itemData[dataIndex].url} target="_blank">
+              <Typography color="secondary">
+                {itemData[dataIndex].link}
+              </Typography>
+            </Link>
+          )
+        },
+      },
+    },
+    {
+      name: "tags",
+      label: "Tags",
+      options: {
+        filter: true,
+        sort: false,
+        customBodyRenderLite: dataIndex => {
+          return (
+            <Grid container spacing={1}>
+              {_.map(itemData[dataIndex].tags, (tag, i) => {
+                return (
+                  <Grid key={i} item>
+                    <Chip
+                      size="small"
+                      className="capitalize-deeply"
+                      key={i}
+                      label={_.upperFirst(tag)}
+                    />
+                  </Grid>
+                )
+              })}
+            </Grid>
+          )
+        },
+        customFilterListOptions: {
+          render: v => (v ? v : "No Tag"),
+        },
+        filterOptions: {
+          renderValue: v => (v ? v : "No Tag"),
+        },
+      },
+    },
+  ]
+
+  const options = {
+    print: false,
+    download: false,
+    selectableRows: "none",
+  }
   return (
-    <Grid container direction="column" justify="center" alignItems="center">
-      <Grid item xs={11} style={{ width: "100%" }}>
-        <List style={{ width: "100%" }}>
-          {itemsCount > 0 ? (
-            itemElements
-          ) : (
-            <ListItem
-              style={{ width: "100%" }}
-              component={Link}
-              href="/admin/#/"
-            >
-              <Card style={{ width: "100%" }} variant="elevation">
-                <Link href="/admin/#/">
-                  <CardContent>
-                    <Typography color="secondary">{hasLoggedInUser ? "Go to the CMS" : "Login"}</Typography>
-                    <Typography
-                      variant="caption"
-                      color={"primary"}
-                    >
-                      Create your first item!
-                    </Typography>
-                  </CardContent>
-                </Link>
-              </Card>
-            </ListItem>
-          )}
-        </List>
-      </Grid>
-    </Grid>
+    <MUIDataTable
+      title={"Bookmarks"}
+      data={itemData}
+      columns={columns}
+      options={options}
+    />
   )
 }
 
 Items.propTypes = {
-  tags: PropTypes.arrayOf(PropTypes.string),
   origin: PropTypes.string.isRequired,
-}
-
-Items.defaultProps = {
-  tags: [],
 }
